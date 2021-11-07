@@ -2560,6 +2560,8 @@ public class ServiceDBStore extends AbstractServiceStore {
 
 			Map<String, String> paramsCopy  = new HashMap<>(filter.getParams());
 			SearchFilter       searchFilter = new SearchFilter(paramsCopy);
+			searchFilter.setSortBy(filter.getSortBy());
+			searchFilter.setSortType(filter.getSortType());
 
 			if (MapUtils.isNotEmpty(filterResources) && resourceMatchScope != null) {
 				useLegacyResourceSearch = false;

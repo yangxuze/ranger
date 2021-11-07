@@ -34,6 +34,8 @@ import org.apache.commons.collections.PredicateUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.ranger.plugin.model.RangerBaseModelObject;
 import org.apache.ranger.plugin.model.RangerPolicy;
 import org.apache.ranger.plugin.model.RangerPolicy.RangerPolicyItem;
@@ -45,6 +47,7 @@ import org.apache.ranger.plugin.model.RangerServiceDef.RangerResourceDef;
 import org.apache.ranger.plugin.util.SearchFilter;
 
 public class AbstractPredicateUtil {
+	private static final Log LOG = LogFactory.getLog(AbstractPredicateUtil.class);
 	private static Map<String, Comparator<RangerBaseModelObject>> sorterMap  = new HashMap<>();
 
 	public void applyFilter(List<? extends RangerBaseModelObject> objList, SearchFilter filter) {
@@ -62,6 +65,15 @@ public class AbstractPredicateUtil {
 
 		if(sorter != null) {
 			Collections.sort(objList, sorter);
+		}
+
+		String sortType = filter == null ? null : filter.getSortType();
+		if(sortType != null){
+			if("desc".equalsIgnoreCase(sortType)){
+				Collections.reverse(objList);
+			}else if(!"asc".equalsIgnoreCase(sortType)){
+				LOG.error("Invalid sortType, sortType=" + sortType);
+			}
 		}
 	}
 
@@ -232,7 +244,6 @@ public class AbstractPredicateUtil {
 		sorterMap.put(SearchFilter.SERVICE_TYPE, serviceDefNameComparator);
 		sorterMap.put(SearchFilter.SERVICE_TYPE_ID, idComparator);
 		sorterMap.put(SearchFilter.SERVICE_NAME, serviceNameComparator);
-		sorterMap.put(SearchFilter.SERVICE_TYPE_ID, idComparator);
 		sorterMap.put(SearchFilter.POLICY_NAME, policyNameComparator);
 		sorterMap.put(SearchFilter.POLICY_ID, idComparator);
 		sorterMap.put(SearchFilter.CREATE_TIME, createTimeComparator);
